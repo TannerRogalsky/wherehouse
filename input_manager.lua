@@ -7,14 +7,11 @@ module ( "InputManager", package.seeall )
 ------------------------------------------------
 function InputManager:initialize ()
 
-  function onKeyboardEvent ( key, down )
-    if key == 119 then key = 'up' end
-    if key == 97 then key = 'left' end
-    if key == 100 then key = 'right' end
-    -- Game:keyPressed ( key, down )
+  function on_keyboard_event ( key, down )
+    -- game:keyPressed ( InputManager.key_map[key] or key, down )
   end
 
-  MOAIInputMgr.device.keyboard:setCallback ( onKeyboardEvent )
+  MOAIInputMgr.device.keyboard:setCallback ( on_keyboard_event )
 
   if MOAIInputMgr.device.pointer then
     local function mouse_callback(down, button)
@@ -42,4 +39,11 @@ function InputManager:initialize ()
       end)
   end
 end
+
+InputManager.key_map = {
+  [119] = "up",
+  [97] = "left",
+  [100] = "right",
+  [27] = "esc"
+}
 
