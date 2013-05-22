@@ -40,10 +40,11 @@ end
 
 -- map unicode value to human readable key code
 InputManager.key_map = {
-  [100] = "right",
-  [119] = "up",
+  [100] = "d",
+  [115] = "s",
+  [119] = "w",
   [27] = "esc",
-  [97] = "left",
+  [97] = "a",
 }
 
 return InputManager
