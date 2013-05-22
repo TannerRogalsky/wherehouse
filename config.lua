@@ -15,6 +15,8 @@ InputManager = require 'lib/input_manager'
 
 require 'lib/middleclass'
 Stateful = require 'lib/stateful'
+Grid = require 'lib/grid'
+AStar = require 'lib/astar'
 
 require 'base'
 require 'game'
