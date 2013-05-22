@@ -11,6 +11,8 @@ function Game:initialize()
     beholder.observe("key_down", function(key, unicode) self:key_down(key, unicode) end)
     beholder.observe("key_up", function(key, unicode) self:key_up(key, unicode) end)
   end)
+
+  self:gotoState("Main")
 end
 
 function Game:mouse_down(x, y, button)

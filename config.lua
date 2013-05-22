@@ -20,3 +20,5 @@ AStar = require 'lib/astar'
 
 require 'base'
 require 'game'
+
+require 'states/game/game_main'
