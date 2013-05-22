@@ -5,20 +5,18 @@ MOAISim.openWindow("Test", SCREEN_WIDTH, SCREEN_HEIGHT )
 
 
 -- requirements
-require 'resource_definitions'
-require 'resource_manager'
-require 'input_manager'
-
+dofile("config.lua")
 
 -- initialize things here
-InputManager:initialize()
-game_over = false
+beholder.observe("key_down", "esc", function()
+  os.exit()
+end)
 
 
 -- main simulation loop
 local mainThread = MOAICoroutine.new ()
 mainThread:run(function()
-  while not game_over do
+  while true do
     local dt = MOAISim.getStep()
     -- game.update(dt)
     coroutine.yield()
