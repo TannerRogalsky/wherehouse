@@ -2,6 +2,25 @@ local function newline(string)
   return string .. "\n"
 end
 
+local function num_to_string(num, desired_length)
+  local temp_string = tostring(num)
+  for i=1,desired_length - temp_string:len() do
+    temp_string = "0" .. temp_string
+  end
+  return temp_string
+end
+
+local function coords_to_string(x, y)
+  return num_to_string(x, 2) .. num_to_string(y, 2)
+end
+
+local directions = {
+  north = { 0, -1},
+  south = { 0,  1},
+  east =  { 1,  0},
+  west =  {-1,  0},
+}
+
 local function template_map(x, y, w, h)
   local f = io.open("template.tmx", "w")
   local output = ""
@@ -23,11 +42,22 @@ local function template_map(x, y, w, h)
   output = output .. newline([[ <objectgroup name="Nodes" width="]] .. x .. [[" height="]] .. y .. [[">]])
   for i = 0, x - 1 do
     for j = 0, y - 1 do
-      output = output .. newline([[  <object name="n_]] .. tostring(i) .. tostring(j) .. [[" x="]] .. i * w .. [[" y="]] .. j * h .. [[" width="]] .. w .. [[" height="]] .. h .. [[">]])
+      local coord = coords_to_string(i, j)
+      output = output .. newline([[  <object name="n_]] .. coord .. [[" x="]] .. i * w .. [[" y="]] .. j * h .. [[" width="]] .. w .. [[" height="]] .. h .. [[">]])
+
       -- properties ie. siblings
-      --  <properties>
-      --   <property name="blah" value="n_02"/>
-      --  </properties>
+      output = output .. newline([[   <properties>]])
+      for direction_name,direction_values in pairs(directions) do
+        local dir_x, dir_y = unpack(direction_values)
+        local sibling_x, sibling_y = i + dir_x, j + dir_y
+        local sibling_coord = coords_to_string(sibling_x, sibling_y)
+
+        if sibling_x >= 0 and sibling_x < x and sibling_y >= 0 and sibling_y < y then
+          output = output .. newline([[    <property name="sibling_]] .. direction_name .. [[" value="n_]] .. sibling_coord .. [["/>]])
+        end
+      end
+      output = output .. newline([[   </properties>]])
+
       output = output .. newline([[  </object>]])
     end
   end
