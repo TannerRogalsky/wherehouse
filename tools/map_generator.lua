@@ -2,9 +2,7 @@ local function newline(string)
   return string .. "\n"
 end
 
-local function main(x, y, w, h)
-  print(x, y, w, h)
-
+local function template_map(x, y, w, h)
   local f = io.open("template.tmx", "w")
   local output = ""
 
@@ -27,14 +25,13 @@ local function main(x, y, w, h)
     for j = 0, y - 1 do
       output = output .. newline([[  <object name="n_]] .. tostring(i) .. tostring(j) .. [[" x="]] .. i * w .. [[" y="]] .. j * h .. [[" width="]] .. w .. [[" height="]] .. h .. [[">]])
       -- properties ie. siblings
+      --  <properties>
+      --   <property name="blah" value="n_02"/>
+      --  </properties>
       output = output .. newline([[  </object>]])
     end
   end
   output = output .. newline([[ </objectgroup>]])
-
-   --  <properties>
-   --   <property name="blah" value="n_02"/>
-   --  </properties>
 
   output = output .. newline([[</map>]])
 
@@ -47,5 +44,5 @@ end
 do
   local x, y = arg[1] or 14, arg[2] or 14
   local w, h = arg[3] or 50, arg[4] or 50
-  main(x, y, w, h)
+  template_map(x, y, w, h)
 end
