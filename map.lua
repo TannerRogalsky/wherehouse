@@ -16,7 +16,8 @@ function Map:initialize(x, y, width, height, tile_width, tile_height)
   moai_grid:setSize(width, height, tile_width, tile_height)
   self.grid_prop:setGrid(moai_grid)
   -- center the prop based on grid size + the position that was provided
-  self.grid_prop:setLoc(-width / 2 * tile_width, -height / 2 * tile_height)
+  self.grid_prop:setScl(1, -1)
+  self.grid_prop:setLoc(-width / 2 * tile_width, height / 2 * tile_height)
   self.grid_prop:addLoc(x, y)
 
   -- this is the real grid that has stuff in it
@@ -26,14 +27,18 @@ end
 -- position is a MOAIGridSpace position (default MOAIGridSpace.TILE_CENTER)
 function Map:grid_to_world_coords(grid_x, grid_y, position)
   local moai_grid = self.grid_prop:getGrid()
-  local prop_x, prop_y = moai_grid:getTileLoc(grid_x, grid_y, position)
-  return self.grid_prop:modelToWorld(prop_x, prop_y)
+  local model_x, model_y = moai_grid:getTileLoc(grid_x, grid_y, position)
+  local world_x, world_y = self.grid_prop:modelToWorld(model_x, model_y)
+  -- print(world_x, world_y, model_x, model_y, grid_x, grid_y)
+  return world_x, world_y
 end
 
 function Map:world_to_grid_coords(world_x, world_y)
   local moai_grid = self.grid_prop:getGrid()
-  local grid_x, grid_y = self.grid_prop:worldToModel(world_x, world_y)
-  return moai_grid:locToCoord(grid_x, grid_y)
+  local model_x, model_y = self.grid_prop:worldToModel(world_x, world_y)
+  local grid_x, grid_y = moai_grid:locToCoord(model_x, model_y)
+  -- print(world_x, world_y, model_x, model_y, grid_x, grid_y)
+  return grid_x, grid_y
 end
 
 function Map:add_to_layer(layer)
@@ -42,4 +47,11 @@ end
 
 function Map:remove_from_layer()
   self.layer = nil
+end
+
+function Map:add(x, y, prop)
+  local world_x, world_y = self:grid_to_world_coords(x, y)
+  print(world_x, world_y)
+  prop:setLoc(world_x, world_y)
+  self.layer:insertProp(prop)
 end
