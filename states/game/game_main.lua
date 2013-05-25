@@ -5,7 +5,7 @@ function Main:enteredState()
   self.map:add_to_layer(self.action_layer)
 
   local sprite = MOAIProp2D.new()
-  local sprite_image = MOAIGfxQuad2D.new()
+  sprite_image = MOAIGfxQuad2D.new()
   sprite_image:setTexture("images/50x50__0005_tilted-box-2.png")
   sprite_image:setRect(-25, -25, 25, 25)
   sprite:setDeck(sprite_image)
@@ -24,9 +24,13 @@ end
 function Main:mouse_down(x, y, button)
   local grid_x, grid_y = self.map:world_to_grid_coords(x, y)
   print(grid_x, grid_y)
-  local sprite = MOAIProp2D.new()
-  sprite:setDeck(self.sprite_image)
-  self.map:add(grid_x, grid_y, sprite)
+  -- local sprite = MOAIProp2D.new()
+  -- sprite:setDeck(self.sprite_image)
+  -- self.map:add(grid_x, grid_y, sprite)
+  local map_entity = MapEntity:new(self.map, grid_x, grid_y)
+  self.map.layer:insertProp(map_entity.prop)
+
+  self.mover = map_entity
 end
 
 function Main:mouse_up(x, y, button)
@@ -35,7 +39,18 @@ end
 function Main:mouse_moved(x, y)
 end
 
+local control_map = {
+  keyboard = {
+    w = function(self) self.mover:move(Direction.NORTH:unpack()) end,
+    s = function(self) self.mover:move(Direction.SOUTH:unpack()) end,
+    a = function(self) self.mover:move(Direction.WEST:unpack()) end,
+    d = function(self) self.mover:move(Direction.EAST:unpack()) end
+  }
+}
+
 function Main:key_down(key, unicode)
+  local action = control_map.keyboard[key]
+  if type(action) == "function" then action(self) end
 end
 
 function Main:key_up(key, unicode)

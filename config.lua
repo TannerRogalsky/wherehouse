@@ -21,5 +21,7 @@ AStar = require 'lib/astar'
 require 'base'
 require 'game'
 require 'map'
+require 'map_entity'
+require 'direction'
 
 require 'states/game/game_main'
