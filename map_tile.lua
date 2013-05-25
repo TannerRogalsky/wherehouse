@@ -9,3 +9,11 @@ function MapTile:initialize(parent, x, y)
   self.content = {}
   self.siblings = {}
 end
+
+function MapTile:has_content()
+  if next(self.content) then
+    return true
+  else
+    return false
+  end
+end

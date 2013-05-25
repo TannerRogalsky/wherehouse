@@ -1,4 +1,5 @@
 MapEntity = class('MapEntity', Base)
+MapEntity.static.tween_time = 0.3
 
 function MapEntity:initialize(parent, x, y, width, height)
   Base.initialize(self)
@@ -20,10 +21,15 @@ function MapEntity:initialize(parent, x, y, width, height)
 end
 
 function MapEntity:move(delta_x, delta_y)
-  self:remove_from_grid()
-  self.x, self.y = self.x + delta_x, self.y + delta_y
-  self.prop:setLoc(self.parent:grid_to_model_coords(self.x, self.y))
-  self:insert_into_grid()
+  if self.moving_tween == nil then
+    self:remove_from_grid()
+    local model_x, model_y = self.parent:grid_to_model_coords(self.x, self.y)
+    self.x, self.y = self.x + delta_x, self.y + delta_y
+    local model_target_x, model_target_y = self.parent:grid_to_model_coords(self.x, self.y)
+    self.moving_tween = self.prop:seekLoc(model_target_x, model_target_y, MapEntity.tween_time)
+    self.moving_tween:setListener(MOAIAction.EVENT_STOP, function() self.moving_tween = nil end)
+    self:insert_into_grid()
+  end
 end
 
 function MapEntity:insert_into_grid()
