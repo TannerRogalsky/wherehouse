@@ -14,20 +14,74 @@ function MapEntity:initialize(parent, x, y, width, height)
 
   self.prop = MOAIProp2D.new()
   self.prop:setLoc(self.parent:grid_to_model_coords(self.x, self.y))
-  self.prop:setScl(1, -1)
-  self.prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+  self.prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
 
   self.prop:setDeck(sprite_image)
 end
 
 function MapEntity:move(delta_x, delta_y)
-  if self.moving_tween == nil then
+  if self.out_tween == nil and self.in_tween == nil then
+    local out_direction = Direction[delta_x][delta_y]
+
     self:remove_from_grid()
-    local model_x, model_y = self.parent:grid_to_model_coords(self.x, self.y)
+    self.parent.layer:removeProp(self.prop)
+
+    local out_grid_x, out_grid_y = self.x, self.y
+    local out_model_x, out_model_y = self.parent:grid_to_model_coords(out_grid_x, out_grid_y)
+    local out_model_target_x, out_model_target_y = self.parent:grid_to_model_coords(out_grid_x + out_direction.x, out_grid_y + out_direction.y)
+
+    -- move in EUCLIDEAN space
     self.x, self.y = self.x + delta_x, self.y + delta_y
-    local model_target_x, model_target_y = self.parent:grid_to_model_coords(self.x, self.y)
-    self.moving_tween = self.prop:seekLoc(model_target_x, model_target_y, MapEntity.tween_time)
-    self.moving_tween:setListener(MOAIAction.EVENT_STOP, function() self.moving_tween = nil end)
+
+    local in_grid_x, in_grid_y = self.x, self.y
+    local in_model_x, in_model_y = self.parent:grid_to_model_coords(in_grid_x - out_direction.x, in_grid_y - out_direction.y)
+    local in_model_target_x, in_model_target_y = self.parent:grid_to_model_coords(in_grid_x, in_grid_y)
+
+    -- we need two props
+    self.out_prop = MOAIProp2D.new()
+    self.out_prop:setLoc(out_model_x, out_model_y)
+    self.out_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+    self.out_prop:setDeck(sprite_image)
+    self.parent.layer:insertProp(self.out_prop)
+
+    self.in_prop = MOAIProp2D.new()
+    self.in_prop:setLoc(in_model_x, in_model_y)
+    self.in_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+    self.in_prop:setDeck(sprite_image)
+    self.parent.layer:insertProp(self.in_prop)
+
+    -- tween!
+    self.out_tween = self.out_prop:seekLoc(out_model_target_x, out_model_target_y, MapEntity.tween_time, MOAIEaseType.LINEAR)
+    self.in_tween = self.in_prop:seekLoc(in_model_target_x, in_model_target_y, MapEntity.tween_time, MOAIEaseType.LINEAR)
+
+    -- set scissors
+    local out_scissor = MOAIScissorRect.new()
+    out_scissor:setRect(-25, -25, 25, 25)
+    out_scissor:setLoc(out_model_x, out_model_y)
+    out_scissor:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+    self.out_prop:setScissorRect(out_scissor)
+
+    local in_scissor = MOAIScissorRect.new()
+    in_scissor:setRect(-25, -25, 25, 25)
+    in_scissor:setLoc(in_model_target_x, in_model_target_y)
+    in_scissor:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+    self.in_prop:setScissorRect(in_scissor)
+
+    -- clear tween and scissor
+    self.out_tween:setListener(MOAIAction.EVENT_STOP, function()
+      self.out_tween = nil
+      self.out_prop:setScissorRect()
+      self.parent.layer:removeProp(self.out_prop)
+      self.out_prop = nil
+    end)
+
+    self.in_tween:setListener(MOAIAction.EVENT_STOP, function()
+      self.in_tween = nil
+      self.in_prop:setScissorRect()
+      self.prop = self.in_prop
+      self.in_prop = nil
+    end)
+
     self:insert_into_grid()
   end
 end
