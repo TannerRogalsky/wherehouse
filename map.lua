@@ -22,13 +22,15 @@ function Map:initialize(x, y, width, height, tile_width, tile_height)
 
   -- this is the real grid that has stuff in it
   self.grid = Grid:new(width, height)
+  for x,y,_ in self.grid:each() do
+    self.grid[x][y] = MapTile:new(self, x, y)
+  end
 end
 
 -- position is a MOAIGridSpace position (default MOAIGridSpace.TILE_CENTER)
 function Map:grid_to_world_coords(grid_x, grid_y, position)
   local model_x, model_y = self:grid_to_model_coords(grid_x, grid_y, position)
   local world_x, world_y = self.grid_prop:modelToWorld(model_x, model_y)
-  -- print(world_x, world_y, model_x, model_y, grid_x, grid_y)
   return world_x, world_y
 end
 
@@ -42,7 +44,6 @@ function Map:world_to_grid_coords(world_x, world_y)
   local moai_grid = self.grid_prop:getGrid()
   local model_x, model_y = self.grid_prop:worldToModel(world_x, world_y)
   local grid_x, grid_y = moai_grid:locToCoord(model_x, model_y)
-  -- print(world_x, world_y, model_x, model_y, grid_x, grid_y)
   return grid_x, grid_y
 end
 
@@ -54,14 +55,14 @@ function Map:remove_from_layer()
   self.layer = nil
 end
 
-function Map:add(x, y, prop)
-  -- local world_x, world_y = self:grid_to_world_coords(x, y)
-  -- print(world_x, world_y)
+function Map:add_entity(entity)
+  assert(instanceOf(MapEntity, entity))
+  entity:insert_into_grid()
+  self.layer:insertProp(entity.prop)
+end
 
-  local moai_grid = self.grid_prop:getGrid()
-  local model_x, model_y = moai_grid:getTileLoc(x, y, position)
-  prop:setLoc(model_x, model_y)
-  prop:setScl(1, -1)
-  prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, self.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
-  self.layer:insertProp(prop)
+function Map:remove_entity(entity)
+  assert(instanceOf(MapEntity, entity))
+  entity:remove_from_grid()
+  self.layer:removeProp(entity.prop)
 end

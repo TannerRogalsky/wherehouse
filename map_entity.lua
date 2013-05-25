@@ -20,6 +20,20 @@ function MapEntity:initialize(parent, x, y, width, height)
 end
 
 function MapEntity:move(delta_x, delta_y)
+  self:remove_from_grid()
   self.x, self.y = self.x + delta_x, self.y + delta_y
   self.prop:setLoc(self.parent:grid_to_model_coords(self.x, self.y))
+  self:insert_into_grid()
+end
+
+function MapEntity:insert_into_grid()
+  for _, _, tile in self.parent.grid:each(self.x, self.y, self.width, self.height) do
+      tile.content[self.id] = self
+  end
+end
+
+function MapEntity:remove_from_grid()
+  for _, _, tile in self.parent.grid:each(self.x, self.y, self.width, self.height) do
+      tile.content[self.id] = nil
+  end
 end
