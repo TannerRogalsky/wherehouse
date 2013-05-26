@@ -13,14 +13,40 @@ function Main:enteredState()
     layer:setViewport(self.viewport)
   end
   MOAIRenderMgr.setRenderTable(layers)
+
+  self.mouse_down_pos = nil
 end
 
 function Main:mouse_down(x, y, button)
   local grid_x, grid_y = self.map:world_to_grid_coords(x, y)
   print(self.map.grid:g(grid_x, grid_y):has_content())
+
+  self.mouse_down_pos = {x = x, y = y}
 end
 
 function Main:mouse_up(x, y, button)
+  if self.mouse_down_pos then
+    -- TODO this could use some tolerances
+    local down = self.mouse_down_pos
+    local delta_x, delta_y = down.x - x, down.y - y
+
+    -- only use the largest
+    if math.abs(delta_x) > math.abs(delta_y) then
+      delta_y = 0
+    else
+      delta_x = 0
+    end
+
+    delta_x = math.clamp(-1, delta_x, 1)
+    delta_y = math.clamp(-1, delta_y, 1)
+
+    local direction = Direction[-delta_x][delta_y]
+    if direction then
+      self.mover:move(direction:unpack())
+    end
+
+    self.mouse_down_pos = nil
+  end
 end
 
 function Main:mouse_moved(x, y)
