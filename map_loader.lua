@@ -42,6 +42,17 @@ function MapLoader.load(map_name)
     end
   end
 
+  for name, tilelayer in pairs(layers.tilelayer) do
+    for i,tileset_index in ipairs(tilelayer.data) do
+      i = i - 1
+      local x = i % map.width + 1
+      local y = math.floor(i / map.width) + 1
+      if tileset_index > 0 then
+        MapLoader.build_entity(map, x, y, tileset_index)
+      end
+    end
+  end
+
 
   return map
 end
@@ -53,4 +64,10 @@ end
 
 function MapLoader.fix_relative_path(asset_path)
   return asset_path:gsub(".*/images", "images")
+end
+
+function MapLoader.build_entity(map, x, y, tileset_index)
+  local entity = MapEntity:new(map, x, y)
+  entity:set_index(tileset_index)
+  map:add_entity(entity)
 end

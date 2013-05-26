@@ -11,12 +11,14 @@ function MapEntity:initialize(parent, x, y, width, height)
   self.width, self.height = width or 1, height or 1
 
   self.parent = parent
+  self.index = 1
 
   self.prop = MOAIProp2D.new()
   self.prop:setLoc(self.parent:grid_to_model_coords(self.x, self.y))
   self.prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
 
   self.prop:setDeck(self.parent.tileset)
+  self.prop:setIndex(self.index)
 end
 
 function MapEntity:move(delta_x, delta_y)
@@ -44,12 +46,14 @@ function MapEntity:move(delta_x, delta_y)
     self.out_prop:setLoc(out_model_x, out_model_y)
     self.out_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
     self.out_prop:setDeck(self.parent.tileset)
+    self.out_prop:setIndex(self.index)
     self.layer:insertProp(self.out_prop)
 
     self.in_prop = MOAIProp2D.new()
     self.in_prop:setLoc(in_model_x, in_model_y)
     self.in_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
     self.in_prop:setDeck(self.parent.tileset)
+    self.in_prop:setIndex(self.index)
     self.layer:insertProp(self.in_prop)
 
     -- tween!
@@ -86,6 +90,11 @@ function MapEntity:move(delta_x, delta_y)
 
     self:insert_into_grid()
   end
+end
+
+function MapEntity:set_index(index)
+  self.index = index
+  self.prop:setIndex(self.index)
 end
 
 function MapEntity:insert_into_grid()
