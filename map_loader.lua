@@ -36,9 +36,6 @@ function MapLoader.load(map_name)
         local sibling_x, sibling_y = MapLoader.parse_grid_coords(sibling_name)
         local sibling = map.grid:g(sibling_x, sibling_y)
 
-        if grid_x == 1 and grid_y == 1 then
-          print(tile_data.name, direction.cardinal_name, sibling_name)
-        end
         tile.siblings[direction] = sibling
       end
     end
