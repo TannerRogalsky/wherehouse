@@ -3,7 +3,7 @@ local function newline(string)
 end
 
 local function num_to_string(num, desired_length)
-  local temp_string = tostring(num)
+  local temp_string = tostring(num + 1)
   for i=1,desired_length - temp_string:len() do
     temp_string = "0" .. temp_string
   end

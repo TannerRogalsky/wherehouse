@@ -23,6 +23,7 @@ require 'game'
 require 'map'
 require 'map_tile'
 require 'map_entity'
+require 'map_loader'
 require 'direction'
 
 require 'states/game/game_main'

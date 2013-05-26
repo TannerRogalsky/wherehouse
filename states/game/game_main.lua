@@ -1,12 +1,8 @@
 local Main = Game:addState('Main')
 
 function Main:enteredState()
-  self.map = Map:new(0, 0, 14, 14, 50, 50)
+  self.map = MapLoader.load("test")
   self.map:add_to_layer(self.action_layer)
-
-  sprite_image = MOAIGfxQuad2D.new()
-  sprite_image:setTexture("images/50x50__0005_tilted-box-2.png")
-  sprite_image:setRect(-25, -25, 25, 25)
 
   local map_entity = MapEntity:new(self.map, 1, 1)
   self.map:add_entity(map_entity)

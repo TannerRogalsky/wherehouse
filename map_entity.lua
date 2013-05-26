@@ -16,7 +16,7 @@ function MapEntity:initialize(parent, x, y, width, height)
   self.prop:setLoc(self.parent:grid_to_model_coords(self.x, self.y))
   self.prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
 
-  self.prop:setDeck(sprite_image)
+  self.prop:setDeck(self.parent.tileset)
 end
 
 function MapEntity:move(delta_x, delta_y)
@@ -30,8 +30,10 @@ function MapEntity:move(delta_x, delta_y)
     local out_model_x, out_model_y = self.parent:grid_to_model_coords(out_grid_x, out_grid_y)
     local out_model_target_x, out_model_target_y = self.parent:grid_to_model_coords(out_grid_x + out_direction.x, out_grid_y + out_direction.y)
 
-    -- move in EUCLIDEAN space
-    self.x, self.y = self.x + delta_x, self.y + delta_y
+    -- move based on directional sibling
+    local sibling = self.parent.grid:g(self.x, self.y).siblings[out_direction]
+    self.x, self.y = sibling.x, sibling.y
+
 
     local in_grid_x, in_grid_y = self.x, self.y
     local in_model_x, in_model_y = self.parent:grid_to_model_coords(in_grid_x - out_direction.x, in_grid_y - out_direction.y)
@@ -41,13 +43,13 @@ function MapEntity:move(delta_x, delta_y)
     self.out_prop = MOAIProp2D.new()
     self.out_prop:setLoc(out_model_x, out_model_y)
     self.out_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
-    self.out_prop:setDeck(sprite_image)
+    self.out_prop:setDeck(self.parent.tileset)
     self.parent.layer:insertProp(self.out_prop)
 
     self.in_prop = MOAIProp2D.new()
     self.in_prop:setLoc(in_model_x, in_model_y)
     self.in_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
-    self.in_prop:setDeck(sprite_image)
+    self.in_prop:setDeck(self.parent.tileset)
     self.parent.layer:insertProp(self.in_prop)
 
     -- tween!

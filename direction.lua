@@ -30,3 +30,5 @@ Direction[0][-1] = Direction.NORTH
 Direction[0][1] = Direction.SOUTH
 Direction[1][0] = Direction.EAST
 Direction[-1][0] = Direction.WEST
+
+Direction.list = { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST}
