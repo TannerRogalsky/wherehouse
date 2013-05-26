@@ -24,7 +24,7 @@ function MapEntity:move(delta_x, delta_y)
     local out_direction = Direction[delta_x][delta_y]
 
     self:remove_from_grid()
-    self.parent.layer:removeProp(self.prop)
+    self.layer:removeProp(self.prop)
 
     local out_grid_x, out_grid_y = self.x, self.y
     local out_model_x, out_model_y = self.parent:grid_to_model_coords(out_grid_x, out_grid_y)
@@ -44,13 +44,13 @@ function MapEntity:move(delta_x, delta_y)
     self.out_prop:setLoc(out_model_x, out_model_y)
     self.out_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
     self.out_prop:setDeck(self.parent.tileset)
-    self.parent.layer:insertProp(self.out_prop)
+    self.layer:insertProp(self.out_prop)
 
     self.in_prop = MOAIProp2D.new()
     self.in_prop:setLoc(in_model_x, in_model_y)
     self.in_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.parent.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
     self.in_prop:setDeck(self.parent.tileset)
-    self.parent.layer:insertProp(self.in_prop)
+    self.layer:insertProp(self.in_prop)
 
     -- tween!
     self.out_tween = self.out_prop:seekLoc(out_model_target_x, out_model_target_y, MapEntity.tween_time, MOAIEaseType.LINEAR)
@@ -73,7 +73,7 @@ function MapEntity:move(delta_x, delta_y)
     self.out_tween:setListener(MOAIAction.EVENT_STOP, function()
       self.out_tween = nil
       self.out_prop:setScissorRect()
-      self.parent.layer:removeProp(self.out_prop)
+      self.layer:removeProp(self.out_prop)
       self.out_prop = nil
     end)
 

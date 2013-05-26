@@ -28,14 +28,8 @@ local function template_map(x, y, w, h)
   output = output .. newline([[<?xml version="1.0" encoding="UTF-8"?>]])
   output = output .. newline([[<map version="1.0" orientation="orthogonal" width="]] .. x .. [[" height="]] .. y .. [[" tilewidth="]] .. w .. [[" tileheight="]] .. h .. [[">]])
 
-  -- tile layer
-  output = output .. newline([[ <layer name="Tile Layer 1" width="]] .. x .. [[" height="]] .. y .. [[">]])
-  output = output .. newline([[  <data>]])
-  for i = 1, x * y do
-    output = output .. newline([[   <tile gid="0"/>]])
-  end
-  output = output .. newline([[  </data>]])
-  output = output .. newline([[ </layer>]])
+  output = output .. newline([[ <imagelayer name="Background" width="]] .. x .. [[" height="]] .. y .. [[">]])
+  output = output .. newline([[ </imagelayer>]])
 
 
   -- object layer
@@ -62,6 +56,15 @@ local function template_map(x, y, w, h)
     end
   end
   output = output .. newline([[ </objectgroup>]])
+
+  -- tile layer
+  output = output .. newline([[ <layer name="Tile Layer 1" width="]] .. x .. [[" height="]] .. y .. [[">]])
+  output = output .. newline([[  <data>]])
+  for i = 1, x * y do
+    output = output .. newline([[   <tile gid="0"/>]])
+  end
+  output = output .. newline([[  </data>]])
+  output = output .. newline([[ </layer>]])
 
   output = output .. newline([[</map>]])
 

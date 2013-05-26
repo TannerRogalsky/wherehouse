@@ -25,6 +25,13 @@ function Map:initialize(x, y, width, height, tile_width, tile_height)
   for x,y,_ in self.grid:each() do
     self.grid[x][y] = MapTile:new(self, x, y)
   end
+
+  self.entities = {}
+  self.layers = {
+    background = MOAILayer2D.new(),
+    main = MOAILayer2D.new(),
+    foreground = MOAILayer2D.new()
+  }
 end
 
 -- position is a MOAIGridSpace position (default MOAIGridSpace.TILE_CENTER)
@@ -47,22 +54,25 @@ function Map:world_to_grid_coords(world_x, world_y)
   return grid_x, grid_y
 end
 
-function Map:add_to_layer(layer)
-  self.layer = layer
+function Map:get_layers()
+  local ls = self.layers
+  return {ls.background, ls.main, ls.foreground}
 end
 
-function Map:remove_from_layer()
-  self.layer = nil
-end
-
-function Map:add_entity(entity)
+function Map:add_entity(entity, layer)
   assert(instanceOf(MapEntity, entity))
+  layer = layer or self.layers.main
   entity:insert_into_grid()
-  self.layer:insertProp(entity.prop)
+  entity.layer = layer
+  self.entities[entity.id] = entity
+  self.layers.main:insertProp(entity.prop)
 end
 
-function Map:remove_entity(entity)
+function Map:remove_entity(entity, layer)
   assert(instanceOf(MapEntity, entity))
+  layer = layer or self.layers.main
   entity:remove_from_grid()
-  self.layer:removeProp(entity.prop)
+  entity.layer = layer
+  self.entities[entity.id] = entity
+  self.layers.main:removeProp(entity.prop)
 end

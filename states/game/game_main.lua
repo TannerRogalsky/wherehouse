@@ -2,12 +2,17 @@ local Main = Game:addState('Main')
 
 function Main:enteredState()
   self.map = MapLoader.load("test")
-  self.map:add_to_layer(self.action_layer)
 
   local map_entity = MapEntity:new(self.map, 1, 1)
   self.map:add_entity(map_entity)
 
   self.mover = map_entity
+
+  local layers = self.map:get_layers()
+  for _,layer in ipairs(layers) do
+    layer:setViewport(self.viewport)
+  end
+  MOAIRenderMgr.setRenderTable(layers)
 end
 
 function Main:mouse_down(x, y, button)
