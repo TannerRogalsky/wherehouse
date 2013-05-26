@@ -24,6 +24,8 @@ function MapLoader.load(map_name)
     layers[layer.type][layer.name] = layer
   end
 
+  map:set_background(MapLoader.fix_relative_path(layers.imagelayer["Background"].image))
+
   for index,tile_data in ipairs(layers.objectgroup["Nodes"].objects) do
     local grid_x, grid_y = tile_data.x / map_data.tilewidth + 1, tile_data.y / map_data.tileheight + 1
     local tile = map.grid:g(grid_x, grid_y)

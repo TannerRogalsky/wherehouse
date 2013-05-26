@@ -76,3 +76,15 @@ function Map:remove_entity(entity, layer)
   self.entities[entity.id] = entity
   self.layers.main:removeProp(entity.prop)
 end
+
+function Map:set_background(asset_path)
+  local bg_deck = MOAIGfxQuad2D.new()
+  bg_deck:setTexture(asset_path)
+  local w, h = self.width * self.tile_width / 2, self.height * self.tile_height / 2
+  bg_deck:setRect(-w, -h, w, h)
+  local bg_prop = MOAIProp2D.new()
+  bg_prop:setDeck(bg_deck)
+  bg_prop:setAttrLink(MOAIProp2D.INHERIT_LOC, self.grid_prop, MOAIProp2D.TRANSFORM_TRAIT)
+  bg_prop:setLoc(w, h)
+  self.layers.background:insertProp(bg_prop)
+end
