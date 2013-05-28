@@ -37,7 +37,7 @@ local function template_map(x, y, w, h)
   for i = 0, x - 1 do
     for j = 0, y - 1 do
       local coord = coords_to_string(i, j)
-      output = output .. newline([[  <object name="n_]] .. coord .. [[" x="]] .. i * w .. [[" y="]] .. j * h .. [[" width="]] .. w .. [[" height="]] .. h .. [[">]])
+      output = output .. newline([[  <object name="n_]] .. coord .. [[" type="Node" x="]] .. i * w .. [[" y="]] .. j * h .. [[" width="]] .. w .. [[" height="]] .. h .. [[">]])
 
       -- properties ie. siblings
       output = output .. newline([[   <properties>]])
